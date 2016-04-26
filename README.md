@@ -11,9 +11,17 @@ git clone https://github.com/tgsmith61591/silhouetteR.git
 Then source the script in your R script:
 
 ```R
-source('silhouette/silhouette_score.R')
+source('silhouetteR/silhouette_score.R')
 
 ## Use as follows:
 > silhouette_score(iris[,1:4], iris$Species)
 [1] 0.5034774
+```
+
+If your labels are unique or some classes show up only once, the function will stop and throw an error. For instance:
+
+```R
+x <- c(1,1,1,1,1) ## BAD
+y <- c(0,1,1,1,1) ## BAD
+z <- c(0,0,1,1,1) ## OK
 ```

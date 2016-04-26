@@ -45,6 +45,11 @@ minimum <- function(x, y) {
 
 ## Silhouette score
 silhouette_score <- function(X, labels, samples = FALSE) {
+  if(!(is.data.frame(X) | is.matrix(X)))
+    stop('X must be a dataframe or matrix')
+  if(!all(unlist(lapply(X, is.numeric))))
+    stop('X must be numeric')
+
   X <- as.matrix(X)
   y <- as.numeric(as.factor(labels))
   
@@ -55,7 +60,11 @@ silhouette_score <- function(X, labels, samples = FALSE) {
   # Get dist mat and labels
   distances <- as.matrix(dist(X, diag = T, upper = T))
   unique_labels <- unique(y)
-  
+
+  # If unique len is one, we have to stop
+  if(length(unique_labels) < 2)
+    stop('must be at least two unique labels') 
+ 
   # For sample i, store the mean distance of the cluster to which
   # it belongs in intra_clust_dists[i]
   intra_clust_dists <- rep(1, nrow(distances))
@@ -69,7 +78,12 @@ silhouette_score <- function(X, labels, samples = FALSE) {
     # label (extract the rows into current_distances).
     mask = y == curr_label
     current_distances = distances[mask,]
+    count_y = sum(as.numeric(mask)) ## How many of this label?   
     
+    ## If count_y is 1, we have an issue
+    if(count_y == 1)
+      stop('label only appears once')
+
     # Leave out current sample.
     n_samples_curr_lab = sum(as.numeric(mask)) - 1
     if(n_samples_curr_lab != 0) {
